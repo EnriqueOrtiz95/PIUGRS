@@ -1,5 +1,5 @@
 const Modal = ({ setShowModal, player }) => {
-  const { nickname, fullname, age, start_date, type_category, elo } = player;
+  const { nickname, fullname, age, start_date, type_category, elo, photo } = player;
   return (
     <>
       <div className="h-screen w-full fixed left-0 top-0 flex justify-center items-center bg-black bg-opacity-50 rounded-lg overflow-y-scroll ">
@@ -13,7 +13,21 @@ const Modal = ({ setShowModal, player }) => {
           >
             X
           </button>
-          <div className="player-photo"></div>
+          <div className="player-photo">
+            <style jsx>
+              {
+                `
+                  .player-photo {
+                    background-image: url(${photo});
+                    background-size: cover;
+                    background-position: center center;
+                    width: 100%;
+                    height: 50vh;
+                  }
+                `
+              }
+            </style>
+          </div>
           <div className="flex flex-col justify-center py-8 px-12 text-orange-button">
             <p>
               Category:{" "}
