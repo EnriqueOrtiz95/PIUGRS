@@ -17,8 +17,8 @@ export default function Home() {
         <section className="bg-gray-form2 text-white w-full p my-24">
           <h2 className="heading">How does PIU-GRS Works?</h2>
 
-          <div className=" px-[3%] grid grid-cols-2 items-center py-10 gap-4">
-            <div>
+          <div className=" px-[3%] flex flex-col lg:flex-row items-center py-10 gap-8">
+            <div className="w-2/3">
               <p className="py-8">
                 PIU-GRS is an independient project that aims to collect the best
                 scores of Pump It Up players around the world. The scores are
@@ -28,7 +28,7 @@ export default function Home() {
                 song and every difficulty in the game.
               </p>
             </div>
-            <div>
+            <div className="w-[85%] md:w-[75%] lg:w-1/3">
               <Image src={Score} alt="Score Example" />
             </div>
           </div>
@@ -37,8 +37,11 @@ export default function Home() {
         <section className="bg-gray-form3 text-white w-full p my-24">
           <h2 className="heading">How do i upload a score?</h2>
 
-          <div className=" px-[3%] grid grid-cols-2 items-center py-10 gap-4">
-            <div>
+          <div className=" px-[3%] flex flex-col lg:flex-row items-center py-10 gap-8">
+            <div className="w-[85%] md:w-[75%] lg:w-1/3">
+              <Image src={Score} alt="Score Example" />
+            </div>
+            <div className="lg:w-2/3">
               <p className="py-8">
                 Scores are uploaded by the players themselves. To upload a
                 score, you must have a PIU-GRS account. If you dont have one,
@@ -54,9 +57,6 @@ export default function Home() {
                 This in order to create a database of the best scores of every
                 song and every difficulty in the game.
               </p>
-            </div>
-            <div>
-              <Image src={Score} alt="Score Example" />
             </div>
           </div>
         </section>

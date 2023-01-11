@@ -3,7 +3,9 @@ import Layout from "../components/layout"
 const Globalscores = () => {
   return (
     <Layout>
-        <h1>Globalscores</h1>
+        <section className="bg-gray-form2 text-white w-full p my-24">
+          <h2 className="heading text-red-fond">Global Scores</h2>
+        </section>
     </Layout>
   )
 }
