@@ -23,6 +23,7 @@ const Modal = ({ setShowModal, player }) => {
                     background-position: center center;
                     width: 100%;
                     height: 50vh;
+                    opacity: .8;
                   }
                 `
               }
