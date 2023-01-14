@@ -33,4 +33,12 @@ export let validate = yup.object().shape({
     .string()
     .oneOf([yup.ref("password"), null], "Passwords must match")
     .required("Confirm your password"),
+  // photo: yup
+  //   .mixed()
+  //   .required("Select a file")
+  //   .test(
+  //     "fileSize",
+  //     "Max file size is 3MB",
+  //     (value) => value && value.size <= 3000000
+  //   ),
 });

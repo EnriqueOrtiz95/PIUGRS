@@ -5,12 +5,20 @@ import { validate } from "../utils/validations";
 import Default from "../public/img/stomp.jpg";
 import { BsUpload } from "react-icons/bs";
 import Image from "next/image";
+import Axios from "axios";
 // import DatePicker from "react-datepicker";
 // import "react-datepicker/dist/react-datepicker.css";
 
 const Register = () => {
   const [image, setImage] = useState(null);
   const [fileName, setFileName] = useState(null);
+
+  const handleFile = (e) => {
+    const file = e.target.files[0];
+    setImage(URL.createObjectURL(file));
+    setFileName(file.name);
+  };
+  // const [formSent, setFormSent] = useState(false);
   return (
     <Layout title={"Register"}>
       <Formik
@@ -26,19 +34,42 @@ const Register = () => {
           photo: "",
         }}
         validationSchema={validate}
-        onSubmit={(values, { setSubmitting, resetForm }) => {
-          console.log(values)
+        onSubmit={async (values, { setSubmitting, resetForm }) => {
+          let formData = {
+            nickname: values?.nickname.toUpperCase(),
+            fullname: values?.fullname.toUpperCase(),
+            age: values?.age,
+            email: values?.email,
+            start_date: values?.start_date,
+            type_category: values?.type_category,
+            password: values?.passwordConfirmed,
+            photo: fileName
+          };
+
+          console.log(formData);
           resetForm();
+          setImage(null);
           setSubmitting(true);
           setTimeout(() => {
             setSubmitting(false);
           }, 2000);
+
+          await Axios.post(`http://127.0.0.1:8000/pumper/add`, formData, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          })
+            .then((res) => {
+              console.log(res);
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+          
         }}
       >
         {({ errors, handleSubmit, isSubmitting }) => (
           <Form
-            action="/pumper/add"
-            method="POST"
             autoComplete="off"
             onSubmit={handleSubmit}
             className="bg-gray-form4 border-gray-form2 shadow-md border-2 border-double text-gray-BA max-w-[600px] w-[90%] mx-auto p-12 my-24 relative"
@@ -51,22 +82,20 @@ const Register = () => {
                 accept="image/*"
                 id="photo"
                 className="hidden"
-                onChange={({target: {files}}) => {
-                  files[0] && setFileName(files[0].name);
-                  files && setImage(URL.createObjectURL(files[0]));
+                onChange={(e) => {
+                  handleFile(e);
                 }}
+                // onChange={({ target: { files } }) => {
+                //   setImage(URL.createObjectURL(files[0]));
+                //   setFileName(files[0].name);
+                // }}
               />
               <label
                 htmlFor="photo"
                 className="flex items-center justify-center w-[100px] h-[100px] absolute top-0 left-0 mb-6 text-white cursor-pointer bg-gray-form4 p-6"
               >
                 {image ? (
-                  <Image
-                    src={image}
-                    alt={fileName}
-                    width={100}
-                    height={100}
-                  />
+                  <Image src={image} alt={fileName} width={100} height={100} />
                 ) : (
                   <div>
                     <BsUpload className="mr-2 text-white text-[3rem] hover:text-gray-BA" />
