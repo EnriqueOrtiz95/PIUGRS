@@ -137,6 +137,38 @@ nav a{
   margin-bottom: 5rem;
 }
 
+/* input, input:focus, input::placeholder {
+  color: black;
+} */
+
+input{
+  color: rgb(143, 98, 98);
+}
+
+input:focus{
+  color: rgb(61, 36, 36);
+}
+
+.register-btn{
+  display: block;
+	background: #5A6298;
+	font-weight: 600;
+	border: none;
+	cursor: pointer;
+	width: 100%;
+	padding: 10px;
+  margin-top: 4rem;
+	border-radius: 5px;
+	color: #fff;
+	font-size: 16px;
+	transition: .3s ease all;
+}
+
+.register-btn:hover{
+  background: #4a4f7a;
+}
+
+
 /* .player-photo{
   background-image: url(/img/stomp.jpg);
   background-size: cover;
