@@ -16,7 +16,7 @@ const Register = () => {
   const handleFile = (e) => {
     const file = e.target.files[0];
     setImage(URL.createObjectURL(file));
-    setFileName(file.name);
+    setFileName(file);
   };
   // const [formSent, setFormSent] = useState(false);
   return (
@@ -43,7 +43,7 @@ const Register = () => {
             start_date: values?.start_date,
             type_category: values?.type_category,
             password: values?.passwordConfirmed,
-            photo: fileName
+            photo: fileName,
           };
 
           console.log(formData);
@@ -56,7 +56,7 @@ const Register = () => {
 
           await Axios.post(`http://127.0.0.1:8000/pumper/add`, formData, {
             headers: {
-              "Content-Type": "multipart/form-data",
+              "Content-Type": "multipart/form-data"
             },
           })
             .then((res) => {
@@ -65,7 +65,6 @@ const Register = () => {
             .catch((err) => {
               console.log(err);
             });
-          
         }}
       >
         {({ errors, handleSubmit, isSubmitting }) => (
@@ -89,6 +88,14 @@ const Register = () => {
                 //   setImage(URL.createObjectURL(files[0]));
                 //   setFileName(files[0].name);
                 // }}
+              />
+              <ErrorMessage
+                name="nickname"
+                component={() => (
+                  <p className="text-2xl mt-4 text-red-fond errorInput">
+                    {errors.photo}
+                  </p>
+                )}
               />
               <label
                 htmlFor="photo"
