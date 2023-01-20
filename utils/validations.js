@@ -42,3 +42,11 @@ export let validate = yup.object().shape({
   //     (value) => value && value.size <= 3000000
   //   ),
 });
+
+export let validateCode = yup.object().shape({
+  code: yup
+    .number()
+    .required("Enter the code")
+    .positive()
+    .integer()
+});

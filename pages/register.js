@@ -1,26 +1,28 @@
-import Layout from "../components/layout";
+// import Layout from "../components/layout";
+import LayoutAux from "../components/layoutAux";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { useState } from "react";
 import { validate } from "../utils/validations";
-import Default from "../public/img/stomp.jpg";
 import { BsUpload } from "react-icons/bs";
+import ModalConfirmation from "../components/modalConfirmation";
 import Image from "next/image";
 import Axios from "axios";
-// import DatePicker from "react-datepicker";
-// import "react-datepicker/dist/react-datepicker.css";
+import Verification from "../components/verification";
 
 const Register = () => {
+  const [username, setUsername] = useState("");
   const [image, setImage] = useState(null);
   const [fileName, setFileName] = useState(null);
+  const [formSubmit, setFormSubmit] = useState(false);
+  const [userExists, setUserExists] = useState(false);
 
   const handleFile = (e) => {
     const file = e.target.files[0];
     setImage(URL.createObjectURL(file));
     setFileName(file);
   };
-  // const [formSent, setFormSent] = useState(false);
   return (
-    <Layout title={"Register"}>
+    <LayoutAux title="Register">
       <Formik
         initialValues={{
           nickname: "",
@@ -34,10 +36,10 @@ const Register = () => {
           photo: "",
         }}
         validationSchema={validate}
-        onSubmit={async (values, { setSubmitting, resetForm }) => {
+        onSubmit={async (values, { resetForm }) => {
           let formData = {
-            nickname: values?.nickname.toUpperCase(),
-            fullname: values?.fullname.toUpperCase(),
+            nickname: values?.nickname,
+            fullname: values?.fullname,
             age: values?.age,
             email: values?.email,
             start_date: values?.start_date,
@@ -45,33 +47,35 @@ const Register = () => {
             password: values?.passwordConfirmed,
             photo: fileName,
           };
+          setUsername(values?.email);
 
-          console.log(formData);
-          resetForm();
           setImage(null);
-          setSubmitting(true);
-          setTimeout(() => {
-            setSubmitting(false);
-          }, 2000);
-
           await Axios.post(`http://127.0.0.1:8000/pumper/add`, formData, {
             headers: {
-              "Content-Type": "multipart/form-data"
+              "Content-Type": "multipart/form-data",
             },
           })
             .then((res) => {
               console.log(res);
+              setUserExists(false);
+              setFormSubmit(true);
+              resetForm();
+              // router.push("/verification");
             })
             .catch((err) => {
-              console.log(err);
+              if (err.response.status === 409) {
+                setUserExists(true);
+                console.log("Ya existe un usuario con ese email!");
+              }
             });
         }}
       >
-        {({ errors, handleSubmit, isSubmitting }) => (
+        {({ errors, handleSubmit }) => (
           <Form
-            autoComplete="off"
             onSubmit={handleSubmit}
-            className="bg-gray-form4 border-gray-form2 shadow-md border-2 border-double text-gray-BA max-w-[600px] w-[90%] mx-auto p-12 my-24 relative"
+            className={`bg-gray-form4 border-gray-form2 shadow-md border-2 border-double text-gray-BA max-w-[600px] w-[90%] mx-auto p-12 my-24 relative ${
+              formSubmit && !userExists && "hidden"
+            } `}
           >
             <h2 className="heading text-red-fond">Pumper Register</h2>
             <div className="mb-8">
@@ -84,10 +88,6 @@ const Register = () => {
                 onChange={(e) => {
                   handleFile(e);
                 }}
-                // onChange={({ target: { files } }) => {
-                //   setImage(URL.createObjectURL(files[0]));
-                //   setFileName(files[0].name);
-                // }}
               />
               <ErrorMessage
                 name="nickname"
@@ -235,9 +235,11 @@ const Register = () => {
                 <option value="FS">Free Style</option>
               </Field>
               <ErrorMessage
-                name="email"
+                name="type_category"
                 component={() => (
-                  <p className="text-2xl mt-4 text-red-fond">{errors.email}</p>
+                  <p className="text-2xl mt-4 text-red-fond">
+                    {errors.type_category}
+                  </p>
                 )}
               />
             </div>
@@ -290,13 +292,14 @@ const Register = () => {
             <button type="submit" className="register-btn">
               Register
             </button>
-            {isSubmitting && (
-              <p className="exito">Formulario enviado con exito!</p>
-            )}
+            {userExists && <ModalConfirmation title="User already exists" />}
           </Form>
         )}
       </Formik>
-    </Layout>
+      {formSubmit && !userExists && (
+        <Verification username={username} setFormSubmit={setFormSubmit} />
+      )}
+    </LayoutAux>
   );
 };
 
