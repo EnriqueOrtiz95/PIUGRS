@@ -1,5 +1,5 @@
 // import Layout from "../components/layout";
-import LayoutAux from "../components/layoutAux";
+import LayoutRegister from "../components/layoutRegister";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { useState } from "react";
 import { validate } from "../utils/validations";
@@ -22,7 +22,7 @@ const Register = () => {
     setFileName(file);
   };
   return (
-    <LayoutAux title="Register">
+    <LayoutRegister title="Register">
       <Formik
         initialValues={{
           nickname: "",
@@ -299,7 +299,7 @@ const Register = () => {
       {formSubmit && !userExists && (
         <Verification username={username} setFormSubmit={setFormSubmit} />
       )}
-    </LayoutAux>
+    </LayoutRegister>
   );
 };
 

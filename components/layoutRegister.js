@@ -1,6 +1,6 @@
 import Head from "next/head";
 
-const LayoutAux = ({ children, title = "", description = "" }) => {
+const LayoutRegister = ({ children, title = "", description = "" }) => {
   return (
     <>
       <Head>
@@ -12,4 +12,4 @@ const LayoutAux = ({ children, title = "", description = "" }) => {
   );
 };
 
-export default LayoutAux;
+export default LayoutRegister;
