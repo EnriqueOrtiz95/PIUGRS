@@ -21,23 +21,23 @@ const Header = () => {
     };
   }, [isOpen]);
   return (
-    <div className="nav w-full px-16 pt-8 bg-gray-form3 mx-auto flex flex-col xl:flex-row xl:justify-between items-center">
-      <Link legacyBehavior href="/">
-        <a className="logo">
-          <p className="text-purple">
-            PIU<span className="text-white"> - GRS</span>
-          </p>
-        </a>
-      </Link>
-      <Navegacion isOpen={isOpen} />
-      <LoginSignUp isOpen={isOpen} />
-      <FaBars
-        className={`${
-          isOpen && window.innerWidth < 1200 ? "fa-bars fa-xmark" : "fa-bars"
-        }`}
-        onClick={() => setIsOpen(!isOpen)}
-      />
-    </div>
+      <div className="nav w-full px-16 pt-8 bg-gray-fom3 mx-auto flex flex-col xl:flex-row xl:justify-between items-center">
+        <Link legacyBehavior href="/">
+          <a className="logo">
+            <p className="text-purple">
+              PIU<span className="text-white"> - GRS</span>
+            </p>
+          </a>
+        </Link>
+        <Navegacion isOpen={isOpen} />
+        <LoginSignUp isOpen={isOpen} />
+        <FaBars
+          className={`${
+            isOpen && window.innerWidth < 1200 ? "fa-bars fa-xmark" : "fa-bars"
+          }`}
+          onClick={() => setIsOpen(!isOpen)}
+        />
+      </div>
   );
 };
 
