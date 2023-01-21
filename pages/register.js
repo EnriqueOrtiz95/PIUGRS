@@ -4,17 +4,23 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import { useState } from "react";
 import { validate } from "../utils/validations";
 import { BsUpload } from "react-icons/bs";
+import { BiArrowBack } from "react-icons/bi";
 import ModalConfirmation from "../components/modalConfirmation";
 import Image from "next/image";
 import Axios from "axios";
 import Verification from "../components/verification";
+import { useRouter } from "next/router";
 
 const Register = () => {
+
+  const router = useRouter();
+
   const [username, setUsername] = useState("");
   const [image, setImage] = useState(null);
   const [fileName, setFileName] = useState(null);
   const [formSubmit, setFormSubmit] = useState(false);
   const [userExists, setUserExists] = useState(false);
+  const [messageError, setMessageError] = useState("");
 
   const handleFile = (e) => {
     const file = e.target.files[0];
@@ -50,7 +56,7 @@ const Register = () => {
           setUsername(values?.email);
 
           setImage(null);
-          await Axios.post(`http://127.0.0.1:8000/pumper/add`, formData, {
+          await Axios.post(`${process.env.NEXT_PUBLIC_API_URL}/pumper/add`, formData, {
             headers: {
               "Content-Type": "multipart/form-data",
             },
@@ -65,7 +71,10 @@ const Register = () => {
             .catch((err) => {
               if (err.response.status === 409) {
                 setUserExists(true);
-                console.log("Ya existe un usuario con ese email!");
+                return;
+              }
+              if (!err.response) {
+                setMessageError("Error de conexión");
               }
             });
         }}
@@ -78,6 +87,18 @@ const Register = () => {
             } `}
           >
             <h2 className="heading text-red-fond">Pumper Register</h2>
+            <label
+                className="flex items-center justify-center w-[100px] h-[100px] absolute top-0 right-0 mb-6 text-white cursor-pointer bg-gray-form4 p-6"
+              >
+                <BiArrowBack
+                className="mr-2 text-white text-[3rem] hover:text-gray-BA"
+                onClick={() => {
+                  setTimeout(() => {
+                    router.push("/")
+                  }, 500);
+                }}
+                />
+              </label>
             <div className="mb-8">
               <Field
                 type="file"
@@ -99,13 +120,13 @@ const Register = () => {
               />
               <label
                 htmlFor="photo"
-                className="flex items-center justify-center w-[100px] h-[100px] absolute top-0 left-0 mb-6 text-white cursor-pointer bg-gray-form4 p-6"
+                className="flex items-center justify-center w-[100px] h-[100px] absolute top-0 left-0 text-white cursor-pointer bg-gray-form4"
               >
                 {image ? (
-                  <Image src={image} alt={fileName} width={100} height={100} />
+                  <Image src={image} alt={fileName} width={100} height={200} />
                 ) : (
                   <div>
-                    <BsUpload className="mr-2 text-white text-[3rem] hover:text-gray-BA" />
+                    <BsUpload className="text-white text-[3rem] hover:text-gray-BA" />
                   </div>
                 )}
               </label>
@@ -292,6 +313,11 @@ const Register = () => {
             <button type="submit" className="register-btn">
               Register
             </button>
+            {messageError && (
+              <p className="text-2xl mt-4 text-red-fond alerta">
+                {messageError}
+              </p>
+            )}
             {userExists && <ModalConfirmation title="User already exists" />}
           </Form>
         )}

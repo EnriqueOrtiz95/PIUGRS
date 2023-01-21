@@ -84,7 +84,7 @@ export default Players;
 
 export async function getStaticProps() {
   try {
-    const respuesta = await fetch(`${process.env.API_URL}/pumper/list`);
+    const respuesta = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/pumper/list`);
     if (!respuesta.ok) {
       return { notFound: true };
     }

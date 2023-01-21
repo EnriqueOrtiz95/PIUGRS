@@ -8,8 +8,6 @@ const Verification = ({ username, setFormSubmit }) => {
   const [error, setError] = useState(false);
   const [registerDone, setRegisterDone] = useState(false);
   const [resendCode, setResendCode] = useState(false);
-  const [confirmationCodeData, setConfirmationCodeData] = useState({});
-  const [resendCodeData, setResendCodeData] = useState({});
 
   const addZero = (num) => {
     return num.length === 5 ? "0" + num : num;
@@ -35,7 +33,7 @@ const Verification = ({ username, setFormSubmit }) => {
             };
             console.log(resendCodeData);
             await Axios.post(
-              "http://localhost:8000/resend_confirmation_code",
+              `${process.env.NEXT_PUBLIC_API_URL}/resend_confirmation_code`,
               resendCodeData,
               {
                 headers: {
@@ -63,7 +61,7 @@ const Verification = ({ username, setFormSubmit }) => {
           };
           console.log(confirmationCodeData);
           await Axios.post(
-            "http://localhost:8000/confirmation_account",
+            `${process.env.NEXT_PUBLIC_API_URL}/confirmation_account`,
             confirmationCodeData,
             {
               headers: {
@@ -87,7 +85,7 @@ const Verification = ({ username, setFormSubmit }) => {
             });
         }}
       >
-        {({handleSubmit, setFieldValue }) => (
+        {({ handleSubmit, setFieldValue }) => (
           <Form
             onSubmit={handleSubmit}
             className={`bg-gray-form4 border-gray-form2 shadow-md border-2 border-double text-gray-BA max-w-[600px] w-[90%] mx-auto p-12 my-24 relative ${

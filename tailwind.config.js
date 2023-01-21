@@ -42,7 +42,7 @@ module.exports = {
         "blue-bg": "#4E95FF",
         "red-alert": "#FF3D00",
         "blue-drop": "#BDD5E2",
-        "gray-form": "#4A5568",
+        "gray-form": "",
         "gray-form2": "rgba(74, 85, 106, 0.4)",
         "gray-form3": "rgba(74, 85, 106, 0.15)",
         "gray-form4": "rgba(74, 85, 106, 0.25)",
