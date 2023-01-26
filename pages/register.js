@@ -66,7 +66,6 @@ const Register = () => {
               setUserExists(false);
               setFormSubmit(true);
               resetForm();
-              // router.push("/verification");
             })
             .catch((err) => {
               if (err.response.status === 409) {
@@ -330,3 +329,4 @@ const Register = () => {
 };
 
 export default Register;
+

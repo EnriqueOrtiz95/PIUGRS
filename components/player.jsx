@@ -1,5 +1,4 @@
 import { useState } from "react";
-import Default from "../public/img/stomp.jpg";
 import Modal from "./modal";
 import Image from "next/image";
 
@@ -10,8 +9,8 @@ const Player = ({ player }) => {
     <>
       <div>
         <Image
-          src={Photo.toString() || Default}
-          alt={`Pumper Img`}
+          src={Photo || "/img/stomp.jpg"}
+          alt={`Img`}
           width={50}
           height={50}
           className={`rounded-[50%] border-gray-BA border-2 inline-block cursor-pointer ${
