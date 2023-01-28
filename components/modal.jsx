@@ -1,6 +1,16 @@
-const Modal = ({ setShowModal, player }) => {
-  const { nickname, fullname, age, start_date, type_category, elo, photo } =
-    player;
+import Image from "next/image";
+
+const Modal = ({ setShowModal, player, countries }) => {
+  const {
+    nickname,
+    fullname,
+    age,
+    start_date,
+    type_category,
+    elo,
+    photo,
+  } = player;
+
   return (
     <>
       <div className="h-screen w-full fixed left-0 top-0 flex justify-center items-center bg-black bg-opacity-50 rounded-lg overflow-y-scroll ">
@@ -19,7 +29,12 @@ const Modal = ({ setShowModal, player }) => {
               <style jsx>
                 {`
                   .player-photo {
-                    background-image: url(${photo});
+                    position: relative;
+                    background-image: linear-gradient(
+                        rgba(0, 0, 0, 0.2),
+                        rgba(0, 0, 0, 0.4)
+                      ),
+                      url(${photo});
                     background-size: cover;
                     background-position: center center;
                     width: 100%;
@@ -28,13 +43,26 @@ const Modal = ({ setShowModal, player }) => {
                   }
                 `}
               </style>
+              <div className="absolute top-0 left-0 w-[75px] h-[75px]">
+                <Image
+                  src={countries[0]?.flags.png}
+                  alt={countries?.name}
+                  width={100}
+                  height={100}
+                />
+              </div>
             </div>
           ) : (
             <div className="player-default">
               <style jsx global>
                 {`
                   .player-default {
-                    background-image: url(/img/stomp.jpg);
+                    position: relative;
+                    background-image: linear-gradient(
+                        rgba(0, 0, 0, 0.2),
+                        rgba(0, 0, 0, 0.4)
+                      ),
+                      url(/img/stomp.jpg);
                     background-size: cover;
                     background-position: center center;
                     width: 100%;
@@ -43,6 +71,14 @@ const Modal = ({ setShowModal, player }) => {
                   }
                 `}
               </style>
+              <div className="absolute top-0 left-0 w-[75px] h-[75px]">
+                <Image
+                  src={countries[0]?.flags.png}
+                  alt={countries?.name}
+                  width={100}
+                  height={100}
+                />
+              </div>
             </div>
           )}
           <div className="flex flex-col justify-center py-8 px-12 text-orange-button">

@@ -1,8 +1,7 @@
 import Layout from "../components/layout";
 import Player from "../components/player";
 import { useState, useEffect } from "react";
-import Skeleton from "react-loading-skeleton";
-import "react-loading-skeleton/dist/skeleton.css";
+import SkeletonPlayers from "../components/skeleton/skeletonPlayers";
 
 const Players = ({ players, playersLength }) => {
   const [isLoading, setIsLoading] = useState(true);
@@ -11,38 +10,11 @@ const Players = ({ players, playersLength }) => {
   const [isPlayerList, setIsPlayerList] = useState(false);
 
   useEffect(() => {
-    // if(players?.length) {
-    //   setIsLoading(false);
-    //   return;
-    // }
-    setTimeout(() => {
+    if(players?.length) {
       setIsLoading(false);
-    }, 4500);
-  }, []);
-
-  const loader = () => {
-    return (
-      <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 text-white">
-        {[...Array(playersLength)].map((_, i) => {
-          return (
-            <div className="flex items-center gap-6" key={i}>
-              <Skeleton
-                width={50}
-                height={50}
-                circle={true}
-                highlightColor="#444"
-              />
-              <Skeleton
-                width={150}
-                borderRadius={"0.25rem"}
-                highlightColor="#444"
-              />
-            </div>
-          );
-        })}
-      </div>
-    );
-  };
+      return;
+    }
+  }, [players]);
 
   return (
     <Layout title={"Players"} description={"List of PIU Players"}>
@@ -73,32 +45,28 @@ const Players = ({ players, playersLength }) => {
       <div className="w-[95%] mx-auto px-16 py-8 bg-gray-form4 my-[5rem]">
         <h2 className="heading text-red-fond">Players</h2>
 
-        {isLoading
-          ? loader()
-          : players?.length && (
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 text-white">
-                {players
-                  .sort((a, b) => {
-                    if (isELO) {
-                      return b.elo - a.elo;
-                    }
-                    if (isPlayerList) {
-                      return a.nickname > b.nickname ? 1 : -1;
-                    }
-                  })
-                  .map((player) => (
-                    <Player key={player.pumper_id} player={player} />
-                  ))}
-              </div>
-            )}
-
-        {/* {
-          <h1 className="text-white text-3xl text-center">
-            {
-              isLoading ? "Loading..." : !players?.length && "No players found"
-            }
-          </h1>
-        } */}
+        {isLoading ? (
+          SkeletonPlayers(playersLength)
+        ) : players?.length ? (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 text-white">
+            {players
+              .sort((a, b) => {
+                if (isELO) {
+                  return b.elo - a.elo;
+                }
+                if (isPlayerList) {
+                  return a.nickname > b.nickname ? 1 : -1;
+                }
+              })
+              .map((player) => (
+                <Player key={player.pumper_id} player={player} />
+              ))}
+          </div>
+        ) : (
+          <div className="text-white text-center">
+            <h2 className="text-2xl">No players found</h2>
+          </div>
+        )}
       </div>
     </Layout>
   );
@@ -111,9 +79,6 @@ export async function getStaticProps() {
     const pumpersList = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/pumper/list`
     );
-    if (!pumpersList.ok) {
-      return { notFound: true };
-    }
 
     const players = await pumpersList.json();
     const playersLength = players.length;
@@ -126,8 +91,10 @@ export async function getStaticProps() {
   } catch (error) {
     return {
       props: {
-        notFound: true,
+        players: [],
+        playersLength: 0,
       },
     };
+    
   }
 }

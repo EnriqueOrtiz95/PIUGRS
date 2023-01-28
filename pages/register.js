@@ -1,7 +1,7 @@
 // import Layout from "../components/layout";
 import LayoutRegister from "../components/layoutRegister";
 import { Formik, Form, Field, ErrorMessage } from "formik";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { validate } from "../utils/validations";
 import { BsUpload } from "react-icons/bs";
 import { BiArrowBack } from "react-icons/bi";
@@ -10,9 +10,9 @@ import Image from "next/image";
 import Axios from "axios";
 import Verification from "../components/verification";
 import { useRouter } from "next/router";
+import { getCountries } from "./api/allCountries";
 
 const Register = () => {
-
   const router = useRouter();
 
   const [username, setUsername] = useState("");
@@ -21,6 +21,18 @@ const Register = () => {
   const [formSubmit, setFormSubmit] = useState(false);
   const [userExists, setUserExists] = useState(false);
   const [messageError, setMessageError] = useState("");
+  const [countries, setCountries] = useState([]);
+
+  useEffect(() => {
+    const callCountries = async () => {
+      const countries = await getCountries();
+      setCountries(countries);
+    };
+    callCountries();
+  }),
+    [];
+
+  
 
   const handleFile = (e) => {
     const file = e.target.files[0];
@@ -35,6 +47,7 @@ const Register = () => {
           fullname: "",
           age: "",
           email: "",
+          country: "",
           start_date: 2000,
           type_category: "",
           password: "",
@@ -48,6 +61,7 @@ const Register = () => {
             fullname: values?.fullname,
             age: values?.age,
             email: values?.email,
+            country: values?.country,
             start_date: values?.start_date,
             type_category: values?.type_category,
             password: values?.passwordConfirmed,
@@ -56,11 +70,15 @@ const Register = () => {
           setUsername(values?.email);
 
           setImage(null);
-          await Axios.post(`${process.env.NEXT_PUBLIC_API_URL}/pumper/add`, formData, {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          })
+          await Axios.post(
+            `${process.env.NEXT_PUBLIC_API_URL}/pumper/add`,
+            formData,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+              },
+            }
+          )
             .then((res) => {
               console.log(res);
               setUserExists(false);
@@ -86,18 +104,16 @@ const Register = () => {
             } `}
           >
             <h2 className="heading text-red-fond">Pumper Register</h2>
-            <label
-                className="flex items-center justify-center w-[100px] h-[100px] absolute top-0 right-0 mb-6 text-white cursor-pointer bg-gray-form4 p-6"
-              >
-                <BiArrowBack
+            <label className="flex items-center justify-center w-[100px] h-[100px] absolute top-0 right-0 mb-6 text-white cursor-pointer bg-gray-form4 p-6">
+              <BiArrowBack
                 className="mr-2 text-white text-[3rem] hover:text-gray-BA"
                 onClick={() => {
                   setTimeout(() => {
-                    router.push("/")
+                    router.push("/");
                   }, 500);
                 }}
-                />
-              </label>
+              />
+            </label>
             <div className="mb-8">
               <Field
                 type="file"
@@ -206,6 +222,33 @@ const Register = () => {
                 name="email"
                 component={() => (
                   <p className="text-2xl mt-4 text-red-fond">{errors.email}</p>
+                )}
+              />
+            </div>
+            <div>
+              <label htmlFor="country" className="block mb-6 mt-10 text-purple">
+                Country
+              </label>
+              <Field
+                as="select"
+                name="country"
+                id="country"
+                className="w-full bg-white px-2 py-1"
+              >
+                {countries.sort(
+                  (a, b) => a.name.common.localeCompare(b.name.common)
+                ).map((country, index) => (
+                  <option key={index} value={country.name.common}>
+                    {country.name.common}
+                  </option>
+                ))}
+              </Field>
+              <ErrorMessage
+                name="country"
+                component={() => (
+                  <p className="text-2xl mt-4 text-red-fond">
+                    {errors.country}
+                  </p>
                 )}
               />
             </div>
@@ -329,4 +372,3 @@ const Register = () => {
 };
 
 export default Register;
-
