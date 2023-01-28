@@ -1,20 +1,38 @@
 // import Layout from "../components/layout";
 import LayoutRegister from "../components/layoutRegister";
 import { Formik, Form, Field, ErrorMessage } from "formik";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { validate } from "../utils/validations";
 import { BsUpload } from "react-icons/bs";
+import { BiArrowBack } from "react-icons/bi";
 import ModalConfirmation from "../components/modalConfirmation";
 import Image from "next/image";
 import Axios from "axios";
 import Verification from "../components/verification";
+import { useRouter } from "next/router";
+import { getCountries } from "./api/allCountries";
 
 const Register = () => {
+  const router = useRouter();
+
   const [username, setUsername] = useState("");
   const [image, setImage] = useState(null);
   const [fileName, setFileName] = useState(null);
   const [formSubmit, setFormSubmit] = useState(false);
   const [userExists, setUserExists] = useState(false);
+  const [messageError, setMessageError] = useState("");
+  const [countries, setCountries] = useState([]);
+
+  useEffect(() => {
+    const callCountries = async () => {
+      const countries = await getCountries();
+      setCountries(countries);
+    };
+    callCountries();
+  }),
+    [];
+
+  
 
   const handleFile = (e) => {
     const file = e.target.files[0];
@@ -29,6 +47,7 @@ const Register = () => {
           fullname: "",
           age: "",
           email: "",
+          country: "",
           start_date: 2000,
           type_category: "",
           password: "",
@@ -42,6 +61,7 @@ const Register = () => {
             fullname: values?.fullname,
             age: values?.age,
             email: values?.email,
+            country: values?.country,
             start_date: values?.start_date,
             type_category: values?.type_category,
             password: values?.passwordConfirmed,
@@ -50,22 +70,28 @@ const Register = () => {
           setUsername(values?.email);
 
           setImage(null);
-          await Axios.post(`http://127.0.0.1:8000/pumper/add`, formData, {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          })
+          await Axios.post(
+            `${process.env.NEXT_PUBLIC_API_URL}/pumper/add`,
+            formData,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+              },
+            }
+          )
             .then((res) => {
               console.log(res);
               setUserExists(false);
               setFormSubmit(true);
               resetForm();
-              // router.push("/verification");
             })
             .catch((err) => {
               if (err.response.status === 409) {
                 setUserExists(true);
-                console.log("Ya existe un usuario con ese email!");
+                return;
+              }
+              if (!err.response) {
+                setMessageError("Error de conexión");
               }
             });
         }}
@@ -78,6 +104,16 @@ const Register = () => {
             } `}
           >
             <h2 className="heading text-red-fond">Pumper Register</h2>
+            <label className="flex items-center justify-center w-[100px] h-[100px] absolute top-0 right-0 mb-6 text-white cursor-pointer bg-gray-form4 p-6">
+              <BiArrowBack
+                className="mr-2 text-white text-[3rem] hover:text-gray-BA"
+                onClick={() => {
+                  setTimeout(() => {
+                    router.push("/");
+                  }, 500);
+                }}
+              />
+            </label>
             <div className="mb-8">
               <Field
                 type="file"
@@ -99,13 +135,13 @@ const Register = () => {
               />
               <label
                 htmlFor="photo"
-                className="flex items-center justify-center w-[100px] h-[100px] absolute top-0 left-0 mb-6 text-white cursor-pointer bg-gray-form4 p-6"
+                className="flex items-center justify-center w-[100px] h-[100px] absolute top-0 left-0 text-white cursor-pointer bg-gray-form4"
               >
                 {image ? (
-                  <Image src={image} alt={fileName} width={100} height={100} />
+                  <Image src={image} alt={fileName} width={100} height={200} />
                 ) : (
                   <div>
-                    <BsUpload className="mr-2 text-white text-[3rem] hover:text-gray-BA" />
+                    <BsUpload className="text-white text-[3rem] hover:text-gray-BA" />
                   </div>
                 )}
               </label>
@@ -186,6 +222,33 @@ const Register = () => {
                 name="email"
                 component={() => (
                   <p className="text-2xl mt-4 text-red-fond">{errors.email}</p>
+                )}
+              />
+            </div>
+            <div>
+              <label htmlFor="country" className="block mb-6 mt-10 text-purple">
+                Country
+              </label>
+              <Field
+                as="select"
+                name="country"
+                id="country"
+                className="w-full bg-white px-2 py-1"
+              >
+                {countries.sort(
+                  (a, b) => a.name.common.localeCompare(b.name.common)
+                ).map((country, index) => (
+                  <option key={index} value={country.name.common}>
+                    {country.name.common}
+                  </option>
+                ))}
+              </Field>
+              <ErrorMessage
+                name="country"
+                component={() => (
+                  <p className="text-2xl mt-4 text-red-fond">
+                    {errors.country}
+                  </p>
                 )}
               />
             </div>
@@ -292,6 +355,11 @@ const Register = () => {
             <button type="submit" className="register-btn">
               Register
             </button>
+            {messageError && (
+              <p className="text-2xl mt-4 text-red-fond alerta">
+                {messageError}
+              </p>
+            )}
             {userExists && <ModalConfirmation title="User already exists" />}
           </Form>
         )}

@@ -1,27 +1,20 @@
 import Layout from "../components/layout";
 import Player from "../components/player";
 import { useState, useEffect } from "react";
+import SkeletonPlayers from "../components/skeleton/skeletonPlayers";
 
-const Players = ({ players }) => {
+const Players = ({ players, playersLength }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isELO, setIsELO] = useState(false);
   const [isCountry, setIsCountry] = useState(false);
   const [isPlayerList, setIsPlayerList] = useState(false);
 
   useEffect(() => {
-    setLoading();
-  }, []);
-
-
-  const setLoading = () => {
     if(players?.length) {
       setIsLoading(false);
       return;
     }
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 2500);
-  };
+  }, [players]);
 
   return (
     <Layout title={"Players"} description={"List of PIU Players"}>
@@ -52,8 +45,10 @@ const Players = ({ players }) => {
       <div className="w-[95%] mx-auto px-16 py-8 bg-gray-form4 my-[5rem]">
         <h2 className="heading text-red-fond">Players</h2>
 
-        {players?.length && (
-          <div className="grid gridPlayers-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 text-white">
+        {isLoading ? (
+          SkeletonPlayers(playersLength)
+        ) : players?.length ? (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 text-white">
             {players
               .sort((a, b) => {
                 if (isELO) {
@@ -67,14 +62,11 @@ const Players = ({ players }) => {
                 <Player key={player.pumper_id} player={player} />
               ))}
           </div>
+        ) : (
+          <div className="text-white text-center">
+            <h2 className="text-2xl">No players found</h2>
+          </div>
         )}
-        {
-          <h1 className="text-white text-3xl text-center">
-            {
-              isLoading ? "Loading..." : !players?.length && "No players found"
-            }
-          </h1>
-        }
       </div>
     </Layout>
   );
@@ -84,21 +76,25 @@ export default Players;
 
 export async function getStaticProps() {
   try {
-    const respuesta = await fetch(`${process.env.API_URL}/pumper/list`);
-    if (!respuesta.ok) {
-      return { notFound: true };
-    }
-    const players = await respuesta.json();
+    const pumpersList = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/pumper/list`
+    );
+
+    const players = await pumpersList.json();
+    const playersLength = players.length;
     return {
       props: {
         players,
+        playersLength,
       },
     };
   } catch (error) {
     return {
       props: {
-        notFound: true,
+        players: [],
+        playersLength: 0,
       },
     };
+    
   }
 }
